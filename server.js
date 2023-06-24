@@ -4,7 +4,6 @@ let tweets = [
 	{
 		id: "1",
 		text: "first one!",
-		author: { id: 1, username: "Marco" },
 	},
 	{
 		id: "2",
@@ -12,10 +11,25 @@ let tweets = [
 	},
 ];
 
+let users = [
+	{
+		id: "1",
+		firstName: "길동",
+		lastName: "홍",
+	},
+	{
+		id: "2",
+		firstName: "스티브",
+		lastName: "잡스",
+	},
+];
+
 const typeDefs = gql`
 	type User {
 		id: ID
-		username: String
+		firstName: String!
+		lastName: String!
+		fullName: String
 	}
 	type Tweet {
 		id: ID
@@ -23,6 +37,7 @@ const typeDefs = gql`
 		author: User
 	}
 	type Query {
+		allUsers: [User!]!
 		allTweets: [Tweet]
 		tweet(id: ID): Tweet
 	}
@@ -40,6 +55,10 @@ const resolvers = {
 		},
 		tweet(root, { id }) {
 			return tweets.find(tweet => tweet.id === id);
+		},
+		allUsers() {
+			console.log("모든 사용자를 가져옵니다");
+			return users;
 		},
 	},
 	Mutation: {
@@ -59,6 +78,11 @@ const resolvers = {
 			tweets = tweets.filter(tweet => tweet.id !== id);
 
 			return true;
+		},
+	},
+	User: {
+		fullName({ firstName, lastName }) {
+			return `${firstName} ${lastName}`;
 		},
 	},
 };
