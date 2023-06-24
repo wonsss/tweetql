@@ -1,6 +1,6 @@
 import { ApolloServer, gql } from "apollo-server";
 
-const tweets = [
+let tweets = [
 	{
 		id: "1",
 		text: "first one!",
@@ -28,6 +28,7 @@ const typeDefs = gql`
 	}
 	type Mutation {
 		postTweet(text: String, userId: ID): Tweet
+		deleteTweet(id: ID): Boolean
 	}
 `;
 
@@ -39,6 +40,25 @@ const resolvers = {
 		},
 		tweet(root, { id }) {
 			return tweets.find(tweet => tweet.id === id);
+		},
+	},
+	Mutation: {
+		postTweet(root, { text, userId }) {
+			const tweet = {
+				id: tweets.length + 1,
+				text,
+			};
+			tweets.push(tweet);
+			return tweet;
+		},
+		deleteTweet(root, { id }) {
+			const tweet = tweets.find(tweet => tweet.id === id);
+			if (!tweet) {
+				return false;
+			}
+			tweets = tweets.filter(tweet => tweet.id !== id);
+
+			return true;
 		},
 	},
 };
