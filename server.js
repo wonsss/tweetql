@@ -3,11 +3,13 @@ import { ApolloServer, gql } from "apollo-server";
 let tweets = [
 	{
 		id: "1",
-		text: "first one!",
+		text: "Think Different!",
+		userId: "2",
 	},
 	{
 		id: "2",
-		text: "second one",
+		text: "아버지를 아버지라 부르지 못하고~",
+		userId: "1",
 	},
 ];
 
@@ -63,12 +65,13 @@ const resolvers = {
 	},
 	Mutation: {
 		postTweet(root, { text, userId }) {
-			const tweet = {
+			const newTweet = {
 				id: tweets.length + 1,
 				text,
+				userId,
 			};
-			tweets.push(tweet);
-			return tweet;
+			tweets.push(newTweet);
+			return newTweet;
 		},
 		deleteTweet(root, { id }) {
 			const tweet = tweets.find(tweet => tweet.id === id);
@@ -83,6 +86,15 @@ const resolvers = {
 	User: {
 		fullName({ firstName, lastName }) {
 			return `${firstName} ${lastName}`;
+		},
+	},
+	Tweet: {
+		author({ userId }) {
+			const foundUser = users.find(user => user.id === userId);
+			if (!foundUser) {
+				throw new Error("유저를 찾을 수 없습니다.");
+			}
+			return foundUser;
 		},
 	},
 };
